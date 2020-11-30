@@ -20,14 +20,11 @@ def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
     print(64 * '-')
 
     for epoch in range(epochs):
-        print('Epoch {}/{}    '.format(epoch + 1, epochs), end="")
         generator_loss = 0.
         discriminator_loss = 0.
         # Dataloader returns the batches
-        pbar = tqdm(dataloader)
 
-        for real, _ in pbar:
-            pbar.set_description(f"Epoch {epoch + 1}/{epochs}")
+        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch + 1}/{epochs}"):
             cur_batch_size = len(real)
 
             # Flatten the batch of real images from the dataset
