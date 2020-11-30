@@ -76,6 +76,8 @@ def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_d
         for real, _ in tqdm(dataloader, desc=f"Epoch {epoch + 1}/{epochs}"):
             cur_batch_size = len(real)
 
+            real = real.to(device)
+
             # Update discriminator
             disc_opt.zero_grad()
             disc_loss = get_disc_loss(gen, disc, criterion, real, cur_batch_size, z_dim, device)

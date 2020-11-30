@@ -45,18 +45,14 @@ class Generator(nn.Module):
         # Build the neural block
         if not final_layer:
             return nn.Sequential(
-                #### START CODE HERE ####
                 nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride),
                 nn.BatchNorm2d(output_channels),
                 nn.ReLU()
-                #### END CODE HERE ####
             )
         else:  # Final Layer
             return nn.Sequential(
-                #### START CODE HERE ####
                 nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride),
                 nn.Tanh()
-                #### END CODE HERE ####
             )
 
     def unsqueeze_noise(self, noise):
