@@ -7,12 +7,14 @@ from util import show_tensor_images, get_noise
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
 
-def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim, display_step=500):
+
+def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
     gen = gen.to(device)
     disc = disc.to(device)
 
     data_size = len(dataloader.dataset)
 
+    print()
     print('Start training with {}'.format(device_name))
     print(64 * '-')
 

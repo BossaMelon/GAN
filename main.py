@@ -10,7 +10,6 @@ def run():
     criterion = nn.BCEWithLogitsLoss()
     n_epochs = 200
     z_dim = 64
-    display_step = 500
     batch_size = 128
     lr = 0.00001
 
@@ -20,7 +19,7 @@ def run():
     disc_opt = torch.optim.Adam(disc.parameters(), lr=lr)
     dataloader = get_dataloader(batch_size)
 
-    train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim, display_step)
+    train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
 
 if __name__ == '__main__':
