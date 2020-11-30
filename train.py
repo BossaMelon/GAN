@@ -1,13 +1,14 @@
 import torch
 import torch.nn as nn
 from tqdm.auto import tqdm
+
 from loss import get_gen_loss, get_disc_loss
 from util import show_tensor_images, get_noise
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
-def train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim,display_step=500):
+def train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim, display_step=500):
     gen = gen.to(device)
     disc = disc.to(device)
     cur_step = 0
@@ -20,7 +21,7 @@ def train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim,d
     for epoch in range(n_epochs):
 
         # Dataloader returns the batches
-        for real, _ in tqdm(dataloader):
+        for real, _ in dataloader:
             cur_batch_size = len(real)
 
             # Flatten the batch of real images from the dataset
@@ -56,8 +57,8 @@ def train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim,d
                     f"Epoch {epoch}, step {cur_step}: Generator loss: {mean_generator_loss}, discriminator loss: {mean_discriminator_loss}")
                 fake_noise = get_noise(cur_batch_size, z_dim, device=device)
                 fake = gen(fake_noise)
-                show_tensor_images(fake)
-                show_tensor_images(real)
+                show_tensor_images(fake, 'fake-{}'.format(cur_step))
+                show_tensor_images(real, 'real-{}'.format(cur_step))
                 mean_generator_loss = 0
                 mean_discriminator_loss = 0
             cur_step += 1
