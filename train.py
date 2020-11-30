@@ -1,25 +1,25 @@
 import torch
 import torch.nn as nn
-from tqdm.auto import tqdm
 
-from loss import get_gen_loss, get_disc_loss
+from losses import get_gen_loss, get_disc_loss
 from util import show_tensor_images, get_noise
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
 
-def train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim, display_step=500):
+def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim, display_step=500):
     gen = gen.to(device)
     disc = disc.to(device)
-    cur_step = 0
-    mean_generator_loss = 0
-    mean_discriminator_loss = 0
 
-    gen_loss = False
-    error = False
+    data_size = len(dataloader.dataset)
 
-    for epoch in range(n_epochs):
+    print('Start training with {}'.format(device))
+    print(64 * '-')
 
+    for epoch in range(epochs):
+        print('Epoch {}/{}    '.format(epoch + 1, epochs), end="", flush=True)
+        generator_loss = 0.
+        discriminator_loss = 0.
         # Dataloader returns the batches
         for real, _ in dataloader:
             cur_batch_size = len(real)
@@ -27,41 +27,32 @@ def train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim, 
             # Flatten the batch of real images from the dataset
             real = real.view(cur_batch_size, -1).to(device)
 
-            ### Update discriminator ###
-            # Zero out the gradients before backpropagation
+            # Update discriminator
             disc_opt.zero_grad()
-
-            # Calculate discriminator loss
             disc_loss = get_disc_loss(gen, disc, criterion, real, cur_batch_size, z_dim, device)
-
-            # Update gradients
             disc_loss.backward(retain_graph=True)
-
-            # Update optimizer
             disc_opt.step()
 
+            # Update generator
             gen_opt.zero_grad()
             gen_loss = get_gen_loss(gen, disc, criterion, cur_batch_size, z_dim, device)
             gen_loss.backward()
             gen_opt.step()
 
-            # Keep track of the average discriminator loss
-            mean_discriminator_loss += disc_loss.item() / display_step
+            # Keep track of the epoch sum discriminator loss
+            discriminator_loss += disc_loss.item() * cur_batch_size
 
-            # Keep track of the average generator loss
-            mean_generator_loss += gen_loss.item() / display_step
+            # Keep track of the epoch sum generator loss
+            generator_loss += gen_loss.item() * cur_batch_size
 
-            ### Visualization code ###
-            if cur_step % display_step == 0 and cur_step > 0:
-                print(
-                    f"Epoch {epoch}, step {cur_step}: Generator loss: {mean_generator_loss}, discriminator loss: {mean_discriminator_loss}")
-                fake_noise = get_noise(cur_batch_size, z_dim, device=device)
-                fake = gen(fake_noise)
-                show_tensor_images(fake, 'fake-{}'.format(cur_step))
-                show_tensor_images(real, 'real-{}'.format(cur_step))
-                mean_generator_loss = 0
-                mean_discriminator_loss = 0
-            cur_step += 1
+        mean_discriminator_loss = discriminator_loss / data_size
+        mean_generator_loss = generator_loss / data_size
+        print(f"Generator loss: {mean_generator_loss}     discriminator loss: {mean_discriminator_loss}")
+
+        # Visualization
+        fake_noise = get_noise(64, z_dim, device=device)
+        fake = gen(fake_noise)
+        show_tensor_images(fake, f'fake-{epoch + 1}')
 
 
 if __name__ == '__main__':

@@ -71,13 +71,6 @@ class Generator(nn.Module):
         """
         return self.gen(noise)
 
-    def get_gen(self):
-        """
-        Returns:
-            the sequential model
-        """
-        return self.gen
-
     def summary(self):
         summary(self, (self.z_dim,))
 
@@ -109,14 +102,6 @@ class Discriminator(nn.Module):
             image: a flattened image tensor with dimension (im_dim)
         """
         return self.disc(image)
-
-    # Needed for grading
-    def get_disc(self):
-        """
-        Returns:
-            the sequential model
-        """
-        return self.disc
 
     def summary(self):
         return summary(self, (self.im_dim,))
