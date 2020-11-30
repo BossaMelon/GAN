@@ -7,19 +7,32 @@ from torchvision.utils import make_grid
 image_path = data_root = './visualization'
 
 
-def save_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
+def show_tensor_images_gan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
     size per image, plots and prints the images in a uniform grid.
     """
     image_unflat = image_tensor.detach().cpu().view(-1, *size)
+    _show_save(file_name, image_unflat, num_images, show)
+
+
+def show_tensor_images_dcgan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
+    """
+    Function for visualizing images: Given a tensor of images, number of images, and
+    size per image, plots and prints the images in a uniform grid.
+    """
+
+    image_tensor = (image_tensor + 1) / 2
+    image_unflat = image_tensor.detach().cpu()
+    _show_save(file_name, image_unflat, num_images, show)
+
+
+def _show_save(file_name, image_unflat, num_images, show):
     image_grid = make_grid(image_unflat[:num_images], nrow=5)
     image_grid = image_grid.permute(1, 2, 0).squeeze().numpy()
-
     if show:
         plt.imshow(image_grid)
         plt.show()
-
     if not os.path.exists(image_path):
         os.makedirs(image_path)
     file_path = image_path + '/{}.jpg'.format(file_name)
@@ -36,4 +49,3 @@ def get_noise(n_samples, z_dim, device='cpu'):
         device: the device type
     """
     return torch.randn(n_samples, z_dim, device=device)
-
