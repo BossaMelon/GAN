@@ -7,7 +7,7 @@ from torchvision.utils import make_grid
 image_path = data_root = './visualization'
 
 
-def show_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
+def save_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
     size per image, plots and prints the images in a uniform grid.
@@ -22,8 +22,8 @@ def show_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28),
 
     if not os.path.exists(image_path):
         os.makedirs(image_path)
-    file_name = image_path + '/{}.jpg'.format(file_name)
-    plt.imsave(file_name, image_grid)
+    file_path = image_path + '/{}.jpg'.format(file_name)
+    plt.imsave(file_path, image_grid)
 
 
 def get_noise(n_samples, z_dim, device='cpu'):

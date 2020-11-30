@@ -2,42 +2,6 @@ from torch import nn
 from torchsummary import summary
 
 
-def get_generator_block(input_dim, output_dim):
-    """
-    Function for returning a block of the generator's neural network
-    given input and output dimensions.
-    Parameters:
-        input_dim: the dimension of the input vector, a scalar
-        output_dim: the dimension of the output vector, a scalar
-    Returns:
-        a generator neural network layer, with a linear transformation
-          followed by a batch normalization and then a relu activation
-    """
-    return nn.Sequential(
-        nn.Linear(input_dim, output_dim),
-        nn.BatchNorm1d(output_dim),
-        nn.ReLU(inplace=True),
-    )
-
-
-def get_discriminator_block(input_dim, output_dim):
-    """
-    Discriminator Block
-    Function for returning a neural network of the discriminator given input and output dimensions.
-    Parameters:
-        input_dim: the dimension of the input vector, a scalar
-        output_dim: the dimension of the output vector, a scalar
-    Returns:
-        a discriminator neural network layer, with a linear transformation
-          followed by an nn.LeakyReLU activation with negative slope of 0.2
-          (https://pytorch.org/docs/master/generated/torch.nn.LeakyReLU.html)
-    """
-    return nn.Sequential(
-        nn.Linear(input_dim, output_dim),
-        nn.LeakyReLU(negative_slope=0.2)
-    )
-
-
 class Generator(nn.Module):
     """
     Generator Class
@@ -53,13 +17,31 @@ class Generator(nn.Module):
         # Build the neural network
         self.z_dim = z_dim
         self.gen = nn.Sequential(
-            get_generator_block(z_dim, hidden_dim),
-            get_generator_block(hidden_dim, hidden_dim * 2),
-            get_generator_block(hidden_dim * 2, hidden_dim * 4),
-            get_generator_block(hidden_dim * 4, hidden_dim * 8),
+            self.get_generator_block(z_dim, hidden_dim),
+            self.get_generator_block(hidden_dim, hidden_dim * 2),
+            self.get_generator_block(hidden_dim * 2, hidden_dim * 4),
+            self.get_generator_block(hidden_dim * 4, hidden_dim * 8),
 
             nn.Linear(hidden_dim * 8, im_dim),
             nn.Sigmoid()
+        )
+
+    @staticmethod
+    def get_generator_block(input_dim, output_dim):
+        """
+        Function for returning a block of the generator's neural network
+        given input and output dimensions.
+        Parameters:
+            input_dim: the dimension of the input vector, a scalar
+            output_dim: the dimension of the output vector, a scalar
+        Returns:
+            a generator neural network layer, with a linear transformation
+              followed by a batch normalization and then a relu activation
+        """
+        return nn.Sequential(
+            nn.Linear(input_dim, output_dim),
+            nn.BatchNorm1d(output_dim),
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, noise):
@@ -88,10 +70,28 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.im_dim = im_dim
         self.disc = nn.Sequential(
-            get_discriminator_block(im_dim, hidden_dim * 4),
-            get_discriminator_block(hidden_dim * 4, hidden_dim * 2),
-            get_discriminator_block(hidden_dim * 2, hidden_dim),
+            self.get_discriminator_block(im_dim, hidden_dim * 4),
+            self.get_discriminator_block(hidden_dim * 4, hidden_dim * 2),
+            self.get_discriminator_block(hidden_dim * 2, hidden_dim),
             nn.Linear(hidden_dim, 1)
+        )
+
+    @staticmethod
+    def get_discriminator_block(input_dim, output_dim):
+        """
+        Discriminator Block
+        Function for returning a neural network of the discriminator given input and output dimensions.
+        Parameters:
+            input_dim: the dimension of the input vector, a scalar
+            output_dim: the dimension of the output vector, a scalar
+        Returns:
+            a discriminator neural network layer, with a linear transformation
+              followed by an nn.LeakyReLU activation with negative slope of 0.2
+              (https://pytorch.org/docs/master/generated/torch.nn.LeakyReLU.html)
+        """
+        return nn.Sequential(
+            nn.Linear(input_dim, output_dim),
+            nn.LeakyReLU(negative_slope=0.2)
         )
 
     def forward(self, image):

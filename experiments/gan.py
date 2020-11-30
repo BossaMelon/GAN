@@ -2,11 +2,11 @@ import torch
 import torch.nn as nn
 
 from dataloader import get_dataloader
-from models import Generator, Discriminator
-from train import train
+from models.model_gan import Generator, Discriminator
+from train import train_gan
 
 
-def gan():
+def main():
     criterion = nn.BCEWithLogitsLoss()
     n_epochs = 200
     z_dim = 64
@@ -19,12 +19,9 @@ def gan():
     disc_opt = torch.optim.Adam(disc.parameters(), lr=lr)
     dataloader = get_dataloader(batch_size)
 
-    train(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
+    train_gan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
-
-def dcgan():
-    pass
 
 
 if __name__ == '__main__':
-    gan()
+    main()
