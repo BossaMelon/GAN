@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from tqdm.auto import tqdm
 
 from losses import get_gen_loss, get_disc_loss
 from util import show_tensor_images, get_noise
@@ -19,11 +20,14 @@ def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
     print(64 * '-')
 
     for epoch in range(epochs):
-        print('Epoch {}/{}    '.format(epoch + 1, epochs), end="", flush=True)
+        print('Epoch {}/{}    '.format(epoch + 1, epochs), end="")
         generator_loss = 0.
         discriminator_loss = 0.
         # Dataloader returns the batches
-        for real, _ in dataloader:
+        pbar = tqdm(dataloader)
+
+        for real, _ in pbar:
+            pbar.set_description(f"Epoch {epoch + 1}/{epochs}")
             cur_batch_size = len(real)
 
             # Flatten the batch of real images from the dataset
