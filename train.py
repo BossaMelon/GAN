@@ -5,7 +5,7 @@ from losses import get_gen_loss, get_disc_loss
 from util import show_tensor_images, get_noise
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-
+device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
 
 def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim, display_step=500):
     gen = gen.to(device)
@@ -13,7 +13,7 @@ def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim, di
 
     data_size = len(dataloader.dataset)
 
-    print('Start training with {}'.format(device))
+    print('Start training with {}'.format(device_name))
     print(64 * '-')
 
     for epoch in range(epochs):
@@ -47,7 +47,7 @@ def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim, di
 
         mean_discriminator_loss = discriminator_loss / data_size
         mean_generator_loss = generator_loss / data_size
-        print(f"Generator loss: {mean_generator_loss}     discriminator loss: {mean_discriminator_loss}")
+        print(f"Generator loss: {mean_generator_loss:.4f}     discriminator loss: {mean_discriminator_loss:.4f}")
 
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
