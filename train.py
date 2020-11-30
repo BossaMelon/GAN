@@ -15,7 +15,7 @@ def train(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
     data_size = len(dataloader.dataset)
 
     print()
-    print('Start training with {}'.format(device_name))
+    print('Start training on {}'.format(device_name))
     print(64 * '-')
 
     for epoch in range(epochs):

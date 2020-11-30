@@ -1,5 +1,4 @@
 import os
-import socket
 
 import matplotlib.pyplot as plt
 import torch
@@ -8,7 +7,7 @@ from torchvision.utils import make_grid
 image_path = data_root = './visualization'
 
 
-def show_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28)):
+def show_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
     size per image, plots and prints the images in a uniform grid.
@@ -16,14 +15,15 @@ def show_tensor_images(image_tensor, file_name, num_images=25, size=(1, 28, 28))
     image_unflat = image_tensor.detach().cpu().view(-1, *size)
     image_grid = make_grid(image_unflat[:num_images], nrow=5)
     image_grid = image_grid.permute(1, 2, 0).squeeze().numpy()
-    if socket.gethostname() == 'BossaMelond':
+
+    if show:
         plt.imshow(image_grid)
         plt.show()
-    else:
-        if not os.path.exists(image_path):
-            os.makedirs(image_path)
-        file_name = image_path + '/{}.jpg'.format(file_name)
-        plt.imsave(file_name, image_grid)
+
+    if not os.path.exists(image_path):
+        os.makedirs(image_path)
+    file_name = image_path + '/{}.jpg'.format(file_name)
+    plt.imsave(file_name, image_grid)
 
 
 def get_noise(n_samples, z_dim, device='cpu'):
@@ -37,6 +37,3 @@ def get_noise(n_samples, z_dim, device='cpu'):
     """
     return torch.randn(n_samples, z_dim, device=device)
 
-
-if __name__ == '__main__':
-    print(socket.gethostname())
