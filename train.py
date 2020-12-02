@@ -2,7 +2,7 @@ import torch
 from tqdm.auto import tqdm
 
 from losses import get_gen_loss, get_disc_loss
-from util import save_tensor_images_gan, save_tensor_images_dcgan, get_noise, write_loss_to_file
+from utils.util import save_tensor_images_gan, save_tensor_images_dcgan, get_noise, write_loss_to_file
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
@@ -15,7 +15,7 @@ def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim
     data_size = len(dataloader.dataset)
 
     print()
-    print('Start training on {}'.format(device_name))
+    print(f'Start training on {device_name}')
     print(64 * '-')
 
     for epoch in range(epochs):
@@ -68,7 +68,7 @@ def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_d
     data_size = len(dataloader.dataset)
 
     print()
-    print('Start training on {}'.format(device_name))
+    print(f'Start training on {device_name}')
     print(64 * '-')
 
     for epoch in range(epochs):

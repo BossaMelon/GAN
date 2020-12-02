@@ -1,35 +1,10 @@
-import os
-from datetime import datetime
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 import torch
 from torchvision.utils import make_grid
 
-project_root = Path.cwd()
+from utils.path_handle import result_root_path, visualization_path, create_folder
 
 
-def _get_result_path():
-    print()
-    now = datetime.now()
-    dt_string = now.strftime("%m%d_%H%M%S")
-    result_root = project_root / 'results' / dt_string
-    return result_root
-
-
-result_root_path = _get_result_path()
-visualization_path = result_root_path / 'visualization'
-data_path = project_root / 'data'
-
-
-def _create_folder():
-    folders = [visualization_path, data_path]
-    for folder in folders:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-
-
-_create_folder()
 
 
 def save_tensor_images_gan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
@@ -78,7 +53,10 @@ def get_noise(n_samples, z_dim, device='cpu'):
 def write_loss_to_file(loss, file_name):
     file_path = result_root_path / file_name
     with open(file_path, "a+") as file:
-        file.write(str(loss) + '\n')
+        file.write(f"{loss:.4f}" + '\n')
+
+
+create_folder()
 
 
 if __name__ == '__main__':

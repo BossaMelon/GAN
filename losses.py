@@ -1,6 +1,6 @@
 import torch
 
-from util import get_noise
+from utils.util import get_noise
 
 
 def get_disc_loss(gen, disc, criterion, real, num_images, z_dim, device):
