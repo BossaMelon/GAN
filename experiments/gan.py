@@ -8,7 +8,7 @@ from train import train_gan
 
 def main():
     criterion = nn.BCEWithLogitsLoss()
-    n_epochs = 200
+    n_epochs = 50
     z_dim = 64
     batch_size = 128
     lr = 0.00001

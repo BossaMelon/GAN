@@ -18,7 +18,7 @@ def weights_init(m):
 def main():
     # set training parameters
     criterion = nn.BCEWithLogitsLoss()
-    n_epochs = 200
+    n_epochs = 100
     z_dim = 64
     batch_size = 128
     lr = 0.0002
