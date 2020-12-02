@@ -5,8 +5,6 @@ from torchvision.utils import make_grid
 from utils.path_handle import result_root_path, visualization_path, create_folder
 
 
-
-
 def save_tensor_images_gan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
@@ -56,8 +54,13 @@ def write_loss_to_file(loss, file_name):
         file.write(f"{loss:.4f}" + '\n')
 
 
-create_folder()
+def write_traininfo_to_file(info):
+    file_path = result_root_path / 'train_info.txt'
+    with open(file_path, "rb") as file:
+        file.write(info)
 
+
+create_folder()
 
 if __name__ == '__main__':
     write_loss_to_file(22.4, 'dis.txt')

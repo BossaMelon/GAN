@@ -6,9 +6,9 @@ from models.model_gan import Generator, Discriminator
 from train import train_gan
 
 
-def main():
+def run_experiment():
     criterion = nn.BCEWithLogitsLoss()
-    n_epochs = 50
+    n_epochs = 200
     z_dim = 64
     batch_size = 128
     lr = 0.00001
@@ -25,4 +25,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run_experiment()
