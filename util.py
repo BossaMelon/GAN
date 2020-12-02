@@ -6,18 +6,30 @@ import matplotlib.pyplot as plt
 import torch
 from torchvision.utils import make_grid
 
-
 project_root = Path.cwd()
 
 
 def _get_result_path():
+    print()
     now = datetime.now()
-    dt_string = now.strftime("%m%d_%H%M")
+    dt_string = now.strftime("%m%d_%H%M%S")
     result_root = project_root / 'results' / dt_string
     return result_root
 
 
-result_path = _get_result_path()
+result_root_path = _get_result_path()
+visualization_path = result_root_path / 'visualization'
+data_path = project_root / 'data'
+
+
+def _create_folder():
+    folders = [visualization_path, data_path]
+    for folder in folders:
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+
+
+_create_folder()
 
 
 def save_tensor_images_gan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
@@ -46,9 +58,7 @@ def _show_save(file_name, image_unflat, num_images, show):
     if show:
         plt.imshow(image_grid)
         plt.show()
-    visualization_path = result_path / 'visualization'
-    if not os.path.exists(visualization_path):
-        os.makedirs(visualization_path)
+
     file_path = visualization_path / '{}.jpg'.format(file_name)
     plt.imsave(file_path, image_grid)
 
@@ -64,9 +74,13 @@ def get_noise(n_samples, z_dim, device='cpu'):
     """
     return torch.randn(n_samples, z_dim, device=device)
 
-def write_loss_to_file(loss,file_path):
-    pass
+
+def write_loss_to_file(loss, file_name):
+    file_path = result_root_path / file_name
+    with open(file_path, "a+") as file:
+        file.write(str(loss) + '\n')
 
 
 if __name__ == '__main__':
-    print(_get_result_path())
+    write_loss_to_file(22.4, 'dis.txt')
+    write_loss_to_file(222, 'gen.txt')

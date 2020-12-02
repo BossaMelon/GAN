@@ -14,9 +14,11 @@ def main():
     lr = 0.00001
 
     gen = Generator(z_dim)
-    gen_opt = torch.optim.Adam(gen.parameters(), lr=lr)
     disc = Discriminator()
+
+    gen_opt = torch.optim.Adam(gen.parameters(), lr=lr)
     disc_opt = torch.optim.Adam(disc.parameters(), lr=lr)
+
     dataloader = get_dataloader(batch_size)
 
     train_gan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
