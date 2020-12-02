@@ -15,10 +15,10 @@ def weights_init(m):
         torch.nn.init.constant_(m.bias, 0)
 
 
-def run_experiment():
+def run_experiment(n_epochs):
     # set training parameters
     criterion = nn.BCEWithLogitsLoss()
-    n_epochs = 100
+    n_epochs = n_epochs
     z_dim = 64
     batch_size = 128
     lr = 0.0002
@@ -49,4 +49,4 @@ def run_experiment():
 
 
 if __name__ == '__main__':
-    run_experiment()
+    run_experiment(50)
