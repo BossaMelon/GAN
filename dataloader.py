@@ -3,10 +3,10 @@ import os
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import MNIST
-from pathlib import Path
+from util import project_root
 
 
-data_root = Path.cwd()/'data'
+data_root = project_root/'data'
 
 
 def get_dataloader(batch_size, transform=transforms.ToTensor()):

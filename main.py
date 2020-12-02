@@ -1,4 +1,5 @@
 from experiments import *
 
 if __name__ == '__main__':
-    dcgan.main()
+    # dcgan.main()
+    gan.main()

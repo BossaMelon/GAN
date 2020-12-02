@@ -22,6 +22,5 @@ def main():
     train_gan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
 
-
 if __name__ == '__main__':
     main()

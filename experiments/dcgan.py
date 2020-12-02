@@ -16,6 +16,7 @@ def weights_init(m):
 
 
 def main():
+    # set training parameters
     criterion = nn.BCEWithLogitsLoss()
     n_epochs = 200
     z_dim = 64
@@ -24,21 +25,26 @@ def main():
     beta_1 = 0.5
     beta_2 = 0.999
 
+    # instantiate model
     gen = Generator(z_dim)
-    gen_opt = torch.optim.Adam(gen.parameters(), lr=lr, betas=(beta_1, beta_2))
     disc = Discriminator()
+
+    # instantiate optimizer
+    gen_opt = torch.optim.Adam(gen.parameters(), lr=lr, betas=(beta_1, beta_2))
     disc_opt = torch.optim.Adam(disc.parameters(), lr=lr, betas=(beta_1, beta_2))
 
+    # initialize model weights
     gen = gen.apply(weights_init)
     disc = disc.apply(weights_init)
 
+    # set dataloader
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,)),
     ])
-
     dataloader = get_dataloader(batch_size, transform)
 
+    # start training
     train_dcgan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
 

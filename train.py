@@ -3,7 +3,7 @@ import torch.nn as nn
 from tqdm.auto import tqdm
 
 from losses import get_gen_loss, get_disc_loss
-from util import show_tensor_images_gan, show_tensor_images_dcgan, get_noise
+from util import save_tensor_images_gan, save_tensor_images_dcgan, get_noise
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
@@ -55,7 +55,7 @@ def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
-        show_tensor_images_gan(fake, f'gan-{epoch + 1}')
+        save_tensor_images_gan(fake, f'gan-{epoch + 1}')
 
 
 def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
@@ -103,13 +103,5 @@ def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_d
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
-        show_tensor_images_dcgan(fake, f'dcgan-{epoch + 1}')
+        save_tensor_images_dcgan(fake, f'dcgan-{epoch + 1}')
 
-
-if __name__ == '__main__':
-    criterion = nn.BCEWithLogitsLoss()
-    n_epochs = 200
-    z_dim = 64
-    display_step = 500
-    batch_size = 128
-    lr = 0.00001
