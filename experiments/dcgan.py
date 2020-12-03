@@ -5,6 +5,7 @@ from torchvision import transforms
 from dataloader import get_dataloader
 from models.model_dcgan import Generator, Discriminator
 from train import train_dcgan
+from utils.util import plot_result_after_training
 
 
 def weights_init(m):
@@ -47,6 +48,5 @@ def run_experiment(n_epochs):
     # start training
     train_dcgan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
-
-if __name__ == '__main__':
-    run_experiment(50)
+    plot_result_after_training()
+    

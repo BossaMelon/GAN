@@ -4,6 +4,7 @@ import torch.nn as nn
 from dataloader import get_dataloader
 from models.model_gan import Generator, Discriminator
 from train import train_gan
+from utils.util import plot_result_after_training
 
 
 def run_experiment(n_epochs):
@@ -23,6 +24,8 @@ def run_experiment(n_epochs):
 
     train_gan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
+    plot_result_after_training()
 
-if __name__ == '__main__':
-    run_experiment(50)
+
+
+

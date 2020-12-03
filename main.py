@@ -16,3 +16,6 @@ if m_args.model == 'gan':
 
 elif m_args.model == 'dcgan':
     dcgan.run_experiment(m_args.epoch)
+
+
+

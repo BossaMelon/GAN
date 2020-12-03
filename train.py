@@ -8,6 +8,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
 
 
+# TODO logger starts from 1 plot starts from 0...
 def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
     gen = gen.to(device)
     disc = disc.to(device)
@@ -111,3 +112,5 @@ def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_d
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
         save_tensor_images_dcgan(fake, f'dcgan-{epoch + 1}')
+
+
