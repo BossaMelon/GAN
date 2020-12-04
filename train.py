@@ -8,7 +8,6 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
 
 
-# TODO logger starts from 1 plot starts from 0...
 def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim):
     gen = gen.to(device)
     disc = disc.to(device)
@@ -24,7 +23,7 @@ def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim
         discriminator_loss = 0.
         # Dataloader returns the batches
 
-        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch + 1}/{epochs}"):
+        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs-1}"):
             cur_batch_size = len(real)
 
             # Flatten the batch of real images from the dataset
@@ -77,7 +76,7 @@ def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_d
         discriminator_loss = 0.
         # Dataloader returns the batches
 
-        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch + 1}/{epochs}"):
+        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs-1}"):
             cur_batch_size = len(real)
 
             real = real.to(device)

@@ -49,4 +49,3 @@ def run_experiment(n_epochs):
     train_dcgan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim)
 
     plot_result_after_training()
-    
