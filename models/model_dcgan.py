@@ -1,4 +1,5 @@
 import torch.nn as nn
+from torchsummary import summary
 
 
 class Generator(nn.Module):
@@ -55,6 +56,9 @@ class Generator(nn.Module):
                 nn.Tanh()
             )
 
+    def summary(self):
+        return summary(self, (self.z_dim,))
+
     def unsqueeze_noise(self, noise):
         """
         Function for completing a forward pass of the generator: Given a noise tensor,
@@ -86,6 +90,7 @@ class Discriminator(nn.Module):
 
     def __init__(self, im_chan=1, hidden_dim=16):
         super(Discriminator, self).__init__()
+        self.im_dim = (im_chan, 28, 28)
         self.disc = nn.Sequential(
             self.make_disc_block(im_chan, hidden_dim),
             self.make_disc_block(hidden_dim, hidden_dim * 2),
@@ -131,3 +136,13 @@ class Discriminator(nn.Module):
         """
         disc_pred = self.disc(image)
         return disc_pred.view(len(disc_pred), -1)
+
+    def summary(self):
+        return summary(self, self.im_dim)
+
+
+if __name__ == '__main__':
+    gen = Generator()
+    gen.summary()
+    disc = Discriminator()
+    disc.summary()
