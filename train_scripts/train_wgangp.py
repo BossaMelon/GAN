@@ -68,7 +68,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
             generator_losses += [gen_loss.item()]
 
         mean_critic_loss = sum(critic_losses) / data_size
-        mean_generator_loss = sum(generator_loss) / data_size
+        mean_generator_loss = sum(generator_losses) / data_size
 
         write_loss_to_file(mean_critic_loss, 'discriminator_loss.txt')
         write_loss_to_file(mean_generator_loss, 'generator_loss.txt')
