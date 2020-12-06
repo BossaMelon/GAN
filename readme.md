@@ -45,5 +45,9 @@ $$
 
 #### WGAN
 用Wasserstein距离作为新的loss，wloss，并且需要lipschitz-1约束，梯度的绝对值至多为1
-### Gradient Penalty
+### L1约束的做法
+- weight clipping：稳定性比较差
+- spectral normalization：模型效率较低
+- gradient penalty：效果最好
+### WGAN-GP
 软性的L1约束，

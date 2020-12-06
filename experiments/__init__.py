@@ -1,1 +1,1 @@
-__all__ = ["dcgan", "gan"]
+__all__ = ["dcgan", "gan","wgangp"]

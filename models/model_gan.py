@@ -73,7 +73,8 @@ class Discriminator(nn.Module):
             self.get_discriminator_block(im_dim, hidden_dim * 4),
             self.get_discriminator_block(hidden_dim * 4, hidden_dim * 2),
             self.get_discriminator_block(hidden_dim * 2, hidden_dim),
-            nn.Linear(hidden_dim, 1)
+            nn.Linear(hidden_dim, 1),
+            nn.Sigmoid()
         )
 
     @staticmethod

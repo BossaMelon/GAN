@@ -67,3 +67,24 @@ def get_gen_loss(gen, disc, criterion, num_images, z_dim, device):
     gen_loss = criterion(disc_output_fake, torch.ones_like(disc_output_fake))
 
     return gen_loss
+
+
+def gradient_penalty(gradient):
+    """
+    Return the gradient penalty, given a gradient.
+    Given a batch of image gradients, you calculate the magnitude of each image's gradient
+    and penalize the mean quadratic distance of each magnitude to 1.
+    Parameters:
+        gradient: the gradient of the critic's scores, with respect to the mixed image
+    Returns:
+        penalty: the gradient penalty
+    """
+    # Flatten the gradients so that each row captures one image
+    gradient = gradient.view(len(gradient), -1)
+
+    # Calculate the magnitude of every row
+    gradient_norm = gradient.norm(2, dim=1)
+
+    # Penalize the mean squared distance of the gradient norms from 1
+    penalty = ((gradient_norm - 1) ** 2).mean()
+    return penalty

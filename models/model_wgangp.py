@@ -1,4 +1,4 @@
-import torch.nn as nn
+from torch import nn
 from torchsummary import summary
 
 
@@ -26,8 +26,8 @@ class Generator(nn.Module):
     @staticmethod
     def make_gen_block(input_channels, output_channels, kernel_size=3, stride=2, final_layer=False):
         """
-        Function to return a sequence of operations corresponding to a generator block of DCGAN,
-        corresponding to a transposed convolution, a batchnorm (except for in the last layer), and an activation.
+        Function to return a sequence of operations corresponding to a generator block of DCGAN;
+        a transposed convolution, a batchnorm (except in the final layer), and an activation.
         Parameters:
             input_channels: how many channels the input feature representation has
             output_channels: how many channels the output feature representation should have
@@ -36,37 +36,17 @@ class Generator(nn.Module):
             final_layer: a boolean, true if it is the final layer and false otherwise
                       (affects activation and batchnorm)
         """
-
-        #     Steps:
-        #       1) Do a transposed convolution using the given parameters.
-        #       2) Do a batchnorm, except for the last layer.
-        #       3) Follow each batchnorm with a ReLU activation.
-        #       4) If its the final layer, use a Tanh activation after the deconvolution.
-
-        # Build the neural block
         if not final_layer:
             return nn.Sequential(
                 nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride),
                 nn.BatchNorm2d(output_channels),
-                nn.ReLU()
+                nn.ReLU(inplace=True),
             )
-        else:  # Final Layer
+        else:
             return nn.Sequential(
                 nn.ConvTranspose2d(input_channels, output_channels, kernel_size, stride),
-                nn.Tanh()
+                nn.Tanh(),
             )
-
-    def summary(self):
-        return summary(self, (self.z_dim,))
-
-    def unsqueeze_noise(self, noise):
-        """
-        Function for completing a forward pass of the generator: Given a noise tensor,
-        returns a copy of that noise with width and height = 1 and channels = z_dim.
-        Parameters:
-            noise: a noise tensor with dimensions (n_samples, z_dim)
-        """
-        return noise.view(len(noise), self.z_dim, 1, 1)
 
     def forward(self, noise):
         """
@@ -75,33 +55,36 @@ class Generator(nn.Module):
         Parameters:
             noise: a noise tensor with dimensions (n_samples, z_dim)
         """
-        x = self.unsqueeze_noise(noise)
+        x = noise.view(len(noise), self.z_dim, 1, 1)
         return self.gen(x)
 
+    def summary(self):
+        return summary(self, (self.z_dim,))
 
-class Discriminator(nn.Module):
+
+class Critic(nn.Module):
     """
-    Discriminator Class
+    Critic Class
     Values:
         im_chan: the number of channels in the images, fitted for the dataset used, a scalar
               (MNIST is black-and-white, so 1 channel is your default)
-    hidden_dim: the inner dimension, a scalar
+        hidden_dim: the inner dimension, a scalar
     """
 
-    def __init__(self, im_chan=1, hidden_dim=16):
-        super(Discriminator, self).__init__()
+    def __init__(self, im_chan=1, hidden_dim=64):
+        super(Critic, self).__init__()
         self.im_dim = (im_chan, 28, 28)
-        self.disc = nn.Sequential(
-            self.make_disc_block(im_chan, hidden_dim),
-            self.make_disc_block(hidden_dim, hidden_dim * 2),
-            self.make_disc_block(hidden_dim * 2, 1, final_layer=True),
+        self.crit = nn.Sequential(
+            self.make_crit_block(im_chan, hidden_dim),
+            self.make_crit_block(hidden_dim, hidden_dim * 2),
+            self.make_crit_block(hidden_dim * 2, 1, final_layer=True),
         )
 
     @staticmethod
-    def make_disc_block(input_channels, output_channels, kernel_size=4, stride=2, final_layer=False):
+    def make_crit_block(input_channels, output_channels, kernel_size=4, stride=2, final_layer=False):
         """
-        Function to return a sequence of operations corresponding to a discriminator block of DCGAN,
-        corresponding to a convolution, a batchnorm (except for in the last layer), and an activation.
+        Function to return a sequence of operations corresponding to a critic block of DCGAN;
+        a convolution, a batchnorm (except in the final layer), and an activation (except in the final layer).
         Parameters:
             input_channels: how many channels the input feature representation has
             output_channels: how many channels the output feature representation should have
@@ -110,33 +93,26 @@ class Discriminator(nn.Module):
             final_layer: a boolean, true if it is the final layer and false otherwise
                       (affects activation and batchnorm)
         """
-        #     Steps:
-        #       1) Add a convolutional layer using the given parameters.
-        #       2) Do a batchnorm, except for the last layer.
-        #       3) Follow each batchnorm with a LeakyReLU activation with slope 0.2.
-
-        # Build the neural block
         if not final_layer:
             return nn.Sequential(
                 nn.Conv2d(input_channels, output_channels, kernel_size, stride),
                 nn.BatchNorm2d(output_channels),
-                nn.LeakyReLU(0.2)
+                nn.LeakyReLU(0.2, inplace=True),
             )
-        else:  # Final Layer
+        else:
             return nn.Sequential(
-                nn.Conv2d(input_channels, output_channels, kernel_size, stride),
-                nn.Sigmoid()
+                nn.Conv2d(input_channels, output_channels, kernel_size, stride)
             )
 
     def forward(self, image):
         """
-        Function for completing a forward pass of the discriminator: Given an image tensor,
+        Function for completing a forward pass of the critic: Given an image tensor,
         returns a 1-dimension tensor representing fake/real.
         Parameters:
-            image: a flattened image tensor with dimension (im_dim)
+            image: a flattened image tensor with dimension (im_chan)
         """
-        disc_pred = self.disc(image)
-        return disc_pred.view(len(disc_pred), -1)
+        crit_pred = self.crit(image)
+        return crit_pred.view(len(crit_pred), -1)
 
     def summary(self):
         return summary(self, self.im_dim)
@@ -145,5 +121,5 @@ class Discriminator(nn.Module):
 if __name__ == '__main__':
     gen = Generator()
     gen.summary()
-    disc = Discriminator()
-    disc.summary()
+    critic = Critic()
+    critic.summary()

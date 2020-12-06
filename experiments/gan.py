@@ -3,12 +3,12 @@ import torch.nn as nn
 
 from dataloader import get_dataloader
 from models.model_gan import Generator, Discriminator
-from train import train_gan
+from train_scripts.train_gan import train_gan
 from utils.util import plot_result_after_training
 
 
 def run_experiment(n_epochs):
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.BCELoss()
     n_epochs = n_epochs
     z_dim = 64
     batch_size = 128
