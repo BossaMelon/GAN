@@ -20,8 +20,8 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
     print(64 * '-')
 
     for epoch in range(epochs):
-        critic_losses = []
-        generator_losses = []
+        critic_losses = 0.
+        generator_losses = 0.
 
         # Dataloader returns the batches
 
@@ -52,7 +52,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
                 crit_loss.backward(retain_graph=True)
                 # Update optimizer
                 crit_opt.step()
-            critic_losses.append(mean_iteration_critic_loss)
+            critic_losses += mean_iteration_critic_loss
             #print(f"C: {mean_iteration_critic_loss}")
 
             # Update generator
@@ -68,11 +68,11 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
             gen_opt.step()
 
             # Keep track of the average generator loss
-            generator_losses.append(gen_loss.item())
+            generator_losses += gen_loss.item()
             #print(f'G: {gen_loss.item()}')
 
-        mean_critic_loss = sum(critic_losses) / data_size
-        mean_generator_loss = sum(generator_losses) / data_size
+        mean_critic_loss = critic_losses / data_size
+        mean_generator_loss = generator_losses / data_size
 
         write_loss_to_file(mean_critic_loss, 'discriminator_loss.txt')
         write_loss_to_file(mean_generator_loss, 'generator_loss.txt')
