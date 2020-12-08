@@ -26,8 +26,8 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
         discriminator_loss = 0.
         # Dataloader returns the batches
 
-#        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
-        for real, _ in dataloader:
+        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
+#        for real, _ in dataloader:
 
             cur_batch_size = len(real)
 
