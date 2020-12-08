@@ -72,8 +72,8 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
             generator_losses.append(gen_loss.item())
             #print(f'G: {gen_loss.item()}')
 
-        mean_critic_loss = sum(critic_losses)
-        mean_generator_loss = sum(generator_losses)
+        mean_critic_loss = sum(critic_losses) / data_size
+        mean_generator_loss = sum(generator_losses) / data_size
         print(mean_critic_loss)
         print(mean_generator_loss)
 
