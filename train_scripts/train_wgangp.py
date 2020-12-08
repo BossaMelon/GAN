@@ -54,7 +54,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
                 # Update optimizer
                 crit_opt.step()
             critic_losses.append(mean_iteration_critic_loss)
-            print(f"C: {mean_iteration_critic_loss}")
+            #print(f"C: {mean_iteration_critic_loss}")
 
             # Update generator
             gen_opt.zero_grad()
@@ -70,7 +70,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
 
             # Keep track of the average generator loss
             generator_losses.append(gen_loss.item())
-            print(f'G: {gen_loss.item()}')
+            #print(f'G: {gen_loss.item()}')
 
         mean_critic_loss = sum(critic_losses)
         mean_generator_loss = sum(generator_losses)
