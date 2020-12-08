@@ -29,6 +29,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
             real = real.to(device)
             mean_iteration_critic_loss = 0
 
+            # train the critic for n times
             for _ in range(crit_repeats):
                 # Update discriminator
                 crit_opt.zero_grad()
@@ -38,9 +39,10 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
                 crit_real_pred = crit(real)
 
                 epsilon = torch.rand(len(real), 1, 1, 1, device=device, requires_grad=True)
+                # gradient of mixed images
                 gradient = get_gradient(crit, real, fake.detach(), epsilon)
-
                 gp = gradient_penalty(gradient)
+                # only gradient penalty when training the critic
                 crit_loss = get_crit_loss(crit_fake_pred, crit_real_pred, gp, c_lambda)
 
                 mean_iteration_critic_loss += crit_loss.item() / crit_repeats
