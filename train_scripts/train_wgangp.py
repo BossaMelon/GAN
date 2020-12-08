@@ -14,16 +14,15 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
     crit = crit.to(device)
     crit_repeats = 5
     data_size = len(dataloader.dataset)
-    critic_losses = []
-    generator_losses = []
 
     print()
     print(f'Start training on {device_name}')
     print(64 * '-')
 
     for epoch in range(epochs):
-        generator_loss = 0.
-        discriminator_loss = 0.
+        critic_losses = []
+        generator_losses = []
+
         # Dataloader returns the batches
 
         for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
@@ -74,8 +73,6 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
 
         mean_critic_loss = sum(critic_losses) / data_size
         mean_generator_loss = sum(generator_losses) / data_size
-        print(mean_critic_loss)
-        print(mean_generator_loss)
 
         write_loss_to_file(mean_critic_loss, 'discriminator_loss.txt')
         write_loss_to_file(mean_generator_loss, 'generator_loss.txt')
