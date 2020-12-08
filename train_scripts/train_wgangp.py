@@ -26,11 +26,14 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
         discriminator_loss = 0.
         # Dataloader returns the batches
 
-        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
+#        for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
+        for real, _ in dataloader:
+
             cur_batch_size = len(real)
 
             real = real.to(device)
             mean_iteration_critic_loss = 0
+
             for _ in range(crit_repeats):
                 # Update discriminator
                 crit_opt.zero_grad()
@@ -50,9 +53,10 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
                 crit_loss.backward(retain_graph=True)
                 # Update optimizer
                 crit_opt.step()
-            critic_losses += [mean_iteration_critic_loss]
+            critic_losses.append(mean_iteration_critic_loss)
+            print(f"C: {mean_iteration_critic_loss}")
 
-            ### Update generator ###
+            # Update generator
             gen_opt.zero_grad()
             fake_noise_2 = get_noise(cur_batch_size, z_dim, device=device)
             fake_2 = gen(fake_noise_2)
@@ -65,7 +69,8 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
             gen_opt.step()
 
             # Keep track of the average generator loss
-            generator_losses += [gen_loss.item()]
+            generator_losses.append(gen_loss.item())
+            print(f'G: {gen_loss.item()}')
 
         mean_critic_loss = sum(critic_losses) / data_size
         mean_generator_loss = sum(generator_losses) / data_size
@@ -78,4 +83,4 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
-        save_tensor_images_dcgan(fake, f'dcgan-{epoch + 1}')
+        save_tensor_images_dcgan(fake, f'wgan-{epoch + 1}')
