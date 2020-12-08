@@ -2,7 +2,6 @@ import torch
 from tqdm.auto import tqdm
 
 from losses.wgangp_losses import get_crit_loss, get_gen_loss, get_gradient, gradient_penalty
-from train import device, device_name
 from utils.util import write_loss_to_file, get_noise, save_tensor_images_dcgan
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
