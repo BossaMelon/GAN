@@ -2,7 +2,6 @@ import torch
 from tqdm.auto import tqdm
 
 from losses.wgangp_losses import get_crit_loss, get_gen_loss, get_gradient, gradient_penalty
-from train import device, device_name
 from utils.util import write_loss_to_file, get_noise, save_tensor_images_dcgan
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -20,19 +19,17 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
     print(64 * '-')
 
     for epoch in range(epochs):
-        critic_losses = []
-        generator_losses = []
+        critic_losses = 0.
+        generator_losses = 0.
 
         # Dataloader returns the batches
-
         for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
-#        for real, _ in dataloader:
 
             cur_batch_size = len(real)
-
             real = real.to(device)
             mean_iteration_critic_loss = 0
 
+            # train the critic for n times
             for _ in range(crit_repeats):
                 # Update discriminator
                 crit_opt.zero_grad()
@@ -42,9 +39,10 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
                 crit_real_pred = crit(real)
 
                 epsilon = torch.rand(len(real), 1, 1, 1, device=device, requires_grad=True)
+                # gradient of mixed images
                 gradient = get_gradient(crit, real, fake.detach(), epsilon)
-
                 gp = gradient_penalty(gradient)
+                # only gradient penalty when training the critic
                 crit_loss = get_crit_loss(crit_fake_pred, crit_real_pred, gp, c_lambda)
 
                 mean_iteration_critic_loss += crit_loss.item() / crit_repeats
@@ -52,8 +50,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
                 crit_loss.backward(retain_graph=True)
                 # Update optimizer
                 crit_opt.step()
-            critic_losses.append(mean_iteration_critic_loss)
-            #print(f"C: {mean_iteration_critic_loss}")
+            critic_losses += mean_iteration_critic_loss
 
             # Update generator
             gen_opt.zero_grad()
@@ -68,11 +65,10 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
             gen_opt.step()
 
             # Keep track of the average generator loss
-            generator_losses.append(gen_loss.item())
-            #print(f'G: {gen_loss.item()}')
+            generator_losses += gen_loss.item()
 
-        mean_critic_loss = sum(critic_losses) / data_size
-        mean_generator_loss = sum(generator_losses) / data_size
+        mean_critic_loss = critic_losses / data_size
+        mean_generator_loss = generator_losses / data_size
 
         write_loss_to_file(mean_critic_loss, 'discriminator_loss.txt')
         write_loss_to_file(mean_generator_loss, 'generator_loss.txt')
@@ -82,4 +78,4 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
-        save_tensor_images_dcgan(fake, f'wgan-{epoch + 1}')
+        save_tensor_images_dcgan(fake, f'wgangp-{epoch + 1}')
