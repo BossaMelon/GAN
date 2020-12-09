@@ -22,6 +22,7 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
         discriminator_loss = 0.
         # Dataloader returns the batches
 
+        gen.train()
         for real, labels in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
             cur_batch_size = len(real)
 
@@ -78,8 +79,9 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
         fake_noise = get_noise(n_samples=100, z_dim=z_dim, device=device)
         one_hot_labels = get_one_hot_labels(labels.to(device), n_classes)
         noise_and_labels = combine_vectors(fake_noise, one_hot_labels)
+        gen.eval()
         fake = gen(noise_and_labels)
-        save_tensor_images_cgan(fake, f'cgan-{epoch + 1}', num_images=100)
+        save_tensor_images_cgan(fake, f'cgan-{epoch + 1}', num_images=25)
 
 
 def eval_cgan():
