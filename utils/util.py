@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import torch
+import torch.nn.functional as F
 from torchvision.utils import make_grid
 
 from utils.path_handle import result_root_path, visualization_path, create_folder
@@ -25,8 +26,19 @@ def save_tensor_images_dcgan(image_tensor, file_name, num_images=25, size=(1, 28
     _show_save(file_name, image_unflat, num_images, show)
 
 
-def _show_save(file_name, image_unflat, num_images, show):
-    image_grid = make_grid(image_unflat[:num_images], nrow=5)
+def save_tensor_images_cgan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False, nrow=10):
+    """
+    Function for visualizing images: Given a tensor of images, number of images, and
+    size per image, plots and prints the images in a uniform grid.
+    """
+
+    image_tensor = (image_tensor + 1) / 2
+    image_unflat = image_tensor.detach().cpu()
+    _show_save(file_name, image_unflat, num_images, show, nrow)
+
+
+def _show_save(file_name, image_unflat, num_images, show, nrow=5):
+    image_grid = make_grid(image_unflat[:num_images], nrow=nrow)
     image_grid = image_grid.permute(1, 2, 0).squeeze().numpy()
     if show:
         plt.imshow(image_grid)
@@ -90,7 +102,33 @@ def plot_result_after_training():
     plt.plot(generator_loss, label='generator Loss')
 
     plt.legend()
-    plt.savefig(result_root_path/'loss_plot.png')
+    plt.savefig(result_root_path / 'loss_plot.png')
+
+
+def get_one_hot_labels(labels, n_classes):
+    """
+    Function for creating one-hot vectors for the labels, returns a tensor of shape (?, num_classes).
+    Parameters:
+        labels: tensor of labels from the dataloader, size (?)
+        n_classes: the total number of classes in the dataset, an integer scalar
+    """
+    return F.one_hot(labels, n_classes)
+
+
+def combine_vectors(x, y):
+    """
+    Function for combining two vectors with shapes (n_samples, ?) and (n_samples, ?).
+    Parameters:
+      x: (n_samples, ?) the first vector.
+        In this assignment, this will be the noise vector of shape (n_samples, z_dim),
+        but you shouldn't need to know the second dimension's size.
+      y: (n_samples, ?) the second vector.
+        Once again, in this assignment this will be the one-hot class vector
+        with the shape (n_samples, n_classes), but you shouldn't assume this in your code.
+    """
+    # Note: Make sure this function outputs a float no matter what inputs it receives
+    combined = torch.cat((x.float(), y.float()), dim=1)
+    return combined
 
 
 if __name__ == '__main__':
