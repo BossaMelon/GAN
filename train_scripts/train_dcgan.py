@@ -57,4 +57,4 @@ def train_dcgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_d
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
-        save_tensor_images_dcgan(fake, f'dcgan-{epoch + 1}')
+        save_tensor_images_dcgan(fake, f'dcgan-{epoch}')
