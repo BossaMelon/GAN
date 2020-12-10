@@ -48,7 +48,7 @@ def run_experiment(n_epochs):
     mnist_shape = (1, 28, 28)
     n_classes = 10
     generator_input_dim, discriminator_im_chan = get_input_dimensions(z_dim, mnist_shape, n_classes)
-    gen = Generator(z_dim=generator_input_dim)
+    gen = Generator(input_dim=generator_input_dim)
     disc = Discriminator(im_chan=discriminator_im_chan)
 
     # instantiate optimizer
