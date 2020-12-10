@@ -81,7 +81,7 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
         noise_and_labels = combine_vectors(fake_noise, one_hot_labels)
         gen.eval()
         fake = gen(noise_and_labels)
-        save_tensor_images_cgan(fake, f'cgan-{epoch + 1}', num_images=25)
+        save_tensor_images_cgan(fake, f'cgan-{epoch + 1}', num_images=100)
 
 
 def eval_cgan():
