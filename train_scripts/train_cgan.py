@@ -56,7 +56,7 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
             disc_fake_loss = criterion(disc_fake_pred, torch.zeros_like(disc_fake_pred))
             disc_real_loss = criterion(disc_real_pred, torch.ones_like(disc_real_pred))
             disc_loss = (disc_fake_loss + disc_real_loss) / 2
-            disc_loss.backward()
+            disc_loss.backward(retain_graph=True)
             disc_opt.step()
 
             # Keep track of the epoch sum discriminator loss
