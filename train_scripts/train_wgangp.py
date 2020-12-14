@@ -47,7 +47,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
 
                 mean_iteration_critic_loss += crit_loss.item() / crit_repeats
                 # Update gradients
-                crit_loss.backward(retain_graph=True)
+                crit_loss.backward()
                 # Update optimizer
                 crit_opt.step()
             critic_losses += mean_iteration_critic_loss
@@ -78,4 +78,4 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
         # Visualization
         fake_noise = get_noise(64, z_dim, device=device)
         fake = gen(fake_noise)
-        save_tensor_images_dcgan(fake, f'wgangp-{epoch + 1}')
+        save_tensor_images_dcgan(fake, f'wgangp-{epoch}')
