@@ -42,7 +42,7 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
             # noise_and_labels.shape=128,74
             noise_and_labels = combine_vectors(fake_noise, one_hot_labels)
             # fake.shape=128,1,28,28
-            fake = gen(noise_and_labels).detach()
+            fake = gen(noise_and_labels)
             # fake_image_and_labels.shape=128,11,28,28
             fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
 
