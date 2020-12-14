@@ -27,20 +27,28 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
             cur_batch_size = len(real)
 
             real = real.to(device)
+            # for mnist, n_classes=10
+            # one_hot_labels.shape=128,10
             one_hot_labels = get_one_hot_labels(labels.to(device), n_classes)
             image_one_hot_labels = one_hot_labels[:, :, None, None]
+            # image_one_hot_labels.shape=128,10,28,28
             image_one_hot_labels = image_one_hot_labels.repeat(1, 1, mnist_shape[1], mnist_shape[2])
 
             # Update discriminator
             disc_opt.zero_grad()
 
+            # fake_noise.shape=128,64
             fake_noise = get_noise(cur_batch_size, z_dim, device=device)
-
+            # noise_and_labels.shape=128,74
             noise_and_labels = combine_vectors(fake_noise, one_hot_labels)
-            fake = gen(noise_and_labels)
+            # fake.shape=128,1,28,28
+            fake = gen(noise_and_labels).detach()
+            # fake_image_and_labels.shape=128,11,28,28
+            fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
 
-            fake_image_and_labels = torch.cat((fake, image_one_hot_labels.float()), dim=1)
-            real_image_and_labels = torch.cat((real, image_one_hot_labels.float()), dim=1)
+            # real_image_and_labels.shape=128,11,28,28
+            real_image_and_labels = combine_vectors(real, image_one_hot_labels)
+
             disc_fake_pred = disc(fake_image_and_labels)
             disc_real_pred = disc(real_image_and_labels)
 
@@ -55,8 +63,9 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
 
             # Update generator
             gen_opt.zero_grad()
-            fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
-            # This will error if you didn't concatenate your labels to your image correctly
+
+            # fake_image_and_labels contains the computational graph of the last step.
+            # double disc_fake_pred = disc to prevent inplace operator error
             disc_fake_pred = disc(fake_image_and_labels)
             gen_loss = criterion(disc_fake_pred, torch.ones_like(disc_fake_pred))
             gen_loss.backward()

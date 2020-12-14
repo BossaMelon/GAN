@@ -23,6 +23,7 @@ def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim
         discriminator_loss = 0.
         # Dataloader returns the batches
 
+        # TODO use same noise to train discriminator and generator
         for real, _ in tqdm(dataloader, desc=f"Epoch {epoch}/{epochs - 1}"):
             cur_batch_size = len(real)
 
@@ -31,12 +32,14 @@ def train_gan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim
 
             # Update discriminator
             disc_opt.zero_grad()
+            # first forward pass
             disc_loss = get_disc_loss(gen, disc, criterion, real, cur_batch_size, z_dim, device)
-            disc_loss.backward(retain_graph=True)
+            disc_loss.backward()
             disc_opt.step()
 
             # Update generator
             gen_opt.zero_grad()
+            # second forward pass
             gen_loss = get_gen_loss(gen, disc, criterion, cur_batch_size, z_dim, device)
             gen_loss.backward()
             gen_opt.step()

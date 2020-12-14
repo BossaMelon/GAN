@@ -47,7 +47,7 @@ def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lamb
 
                 mean_iteration_critic_loss += crit_loss.item() / crit_repeats
                 # Update gradients
-                crit_loss.backward(retain_graph=True)
+                crit_loss.backward()
                 # Update optimizer
                 crit_opt.step()
             critic_losses += mean_iteration_critic_loss
