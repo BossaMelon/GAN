@@ -54,9 +54,9 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
 
             disc_fake_loss = criterion(disc_fake_pred, torch.zeros_like(disc_fake_pred))
             disc_real_loss = criterion(disc_real_pred, torch.ones_like(disc_real_pred))
+
             disc_loss = (disc_fake_loss + disc_real_loss) / 2
             disc_loss.backward(retain_graph=True)
-            disc_opt.step()
 
             # Keep track of the epoch sum discriminator loss
             discriminator_loss += disc_loss.item() * cur_batch_size
@@ -66,10 +66,12 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
 
             # fake_image_and_labels contains the computational graph of the last step.
             # double disc_fake_pred = disc to prevent inplace operator error
-            disc_fake_pred = disc(fake_image_and_labels)
+            # disc_fake_pred = disc(fake_image_and_labels)
             gen_loss = criterion(disc_fake_pred, torch.ones_like(disc_fake_pred))
             gen_loss.backward()
+
             gen_opt.step()
+            disc_opt.step()
 
             # Keep track of the epoch sum generator loss
             generator_loss += gen_loss.item() * cur_batch_size
