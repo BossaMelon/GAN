@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 
-from dataloader import get_dataloader
+from dataloader import get_dataloader_mnist
 from models.model_cgan import Generator, Discriminator
 from train_scripts.train_cgan import train_cgan
 from utils.util import plot_result_after_training
@@ -64,7 +64,7 @@ def run_experiment(n_epochs):
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,))
     ])
-    dataloader = get_dataloader(batch_size, transform)
+    dataloader = get_dataloader_mnist(batch_size, transform)
 
     # start training
     train_cgan(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, criterion, z_dim, n_classes, mnist_shape)

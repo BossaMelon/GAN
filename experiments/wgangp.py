@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 
-from dataloader import get_dataloader
+from dataloader import get_dataloader_mnist
 from models.model_wgangp import Generator, Critic
 from train_scripts.train_wgangp import train_wgangp
 from utils.util import plot_result_after_training
@@ -44,7 +44,7 @@ def run_experiment(n_epochs):
         transforms.ToTensor(),
         transforms.Normalize((0.5,), (0.5,)),
     ])
-    dataloader = get_dataloader(batch_size, transform)
+    dataloader = get_dataloader_mnist(batch_size, transform)
 
     # start training
     train_wgangp(gen, disc, dataloader, n_epochs, gen_opt, disc_opt, z_dim, c_lambda)

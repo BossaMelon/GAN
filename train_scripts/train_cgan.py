@@ -34,9 +34,9 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
             # image_one_hot_labels.shape=128,10,28,28
             image_one_hot_labels = image_one_hot_labels.repeat(1, 1, mnist_shape[1], mnist_shape[2])
 
+            ##########################
             # Update discriminator
             disc_opt.zero_grad()
-
             # fake_noise.shape=128,64
             fake_noise = get_noise(cur_batch_size, z_dim, device=device)
             # noise_and_labels.shape=128,74
@@ -45,33 +45,36 @@ def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_di
             fake = gen(noise_and_labels)
             # fake_image_and_labels.shape=128,11,28,28
             fake_image_and_labels = combine_vectors(fake, image_one_hot_labels)
-
             # real_image_and_labels.shape=128,11,28,28
             real_image_and_labels = combine_vectors(real, image_one_hot_labels)
-
             disc_fake_pred = disc(fake_image_and_labels)
             disc_real_pred = disc(real_image_and_labels)
-
             disc_fake_loss = criterion(disc_fake_pred, torch.zeros_like(disc_fake_pred))
             disc_real_loss = criterion(disc_real_pred, torch.ones_like(disc_real_pred))
 
             disc_loss = (disc_fake_loss + disc_real_loss) / 2
+            # 在这个情况里，做了一次从gen到disc的forward,但是做了两次backward，所以需要在第一次back的时候保留
+            # 计算图
             disc_loss.backward(retain_graph=True)
+            disc_opt.step()
 
             # Keep track of the epoch sum discriminator loss
             discriminator_loss += disc_loss.item() * cur_batch_size
+            ##########################
 
             # Update generator
             gen_opt.zero_grad()
 
             # fake_image_and_labels contains the computational graph of the last step.
             # double disc_fake_pred = disc to prevent inplace operator error
-            # disc_fake_pred = disc(fake_image_and_labels)
-            gen_loss = criterion(disc_fake_pred, torch.ones_like(disc_fake_pred))
-            gen_loss.backward()
 
+            # pred the fake image with the newly updated discriminator
+            disc_fake_pred_new = disc(fake_image_and_labels)
+            gen_loss = criterion(disc_fake_pred_new, torch.ones_like(disc_fake_pred))
+            # 此时需要从gen_loss算到disc_fake_pred,到fake,到gen,所以仍然需要第一次正向传播产生的计算图
+            gen_loss.backward()
             gen_opt.step()
-            disc_opt.step()
+            ##########################
 
             # Keep track of the epoch sum generator loss
             generator_loss += gen_loss.item() * cur_batch_size
