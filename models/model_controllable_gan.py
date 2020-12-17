@@ -3,6 +3,9 @@ import torch.nn as nn
 from torchvision import transforms
 from tqdm.auto import tqdm
 from pathlib import Path
+import sys
+sys.path.append('./..')
+
 from dataloader import get_dataloader_celebA
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
