@@ -10,6 +10,7 @@ from torchsummary import summary
 from dataloader import get_dataloader_celebA
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
 
 
 class Generator(nn.Module):
@@ -157,13 +158,18 @@ def train_classifier(filename):
     dataloader = get_dataloader_celebA(batch_size, transform)
 
     classifier = Classifier(n_classes=len(label_indices)).to(device)
-    print(classifier.summary())
     class_opt = torch.optim.Adam(classifier.parameters(), lr=lr, betas=(beta_1, beta_2))
     criterion = nn.BCELoss()
 
     cur_step = 0
     classifier_losses = []
     # classifier_val_losses = []
+    print()
+    print(f'Start training on {device_name}')
+    print(64 * '-')
+
+
+
     for epoch in range(n_epochs):
         # Dataloader returns the batches
         for real, labels in tqdm(dataloader, desc=f"Epoch {epoch}/{n_epochs - 1}"):
