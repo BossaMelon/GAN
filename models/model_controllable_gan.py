@@ -1,11 +1,12 @@
+import sys
+
 import torch
 import torch.nn as nn
 from torchvision import transforms
 from tqdm.auto import tqdm
-from pathlib import Path
-import sys
-sys.path.append('./..')
 
+sys.path.append('./..')
+from torchsummary import summary
 from dataloader import get_dataloader_celebA
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
@@ -104,6 +105,7 @@ class Classifier(nn.Module):
         if final_layer:
             return nn.Sequential(
                 nn.Conv2d(input_channels, output_channels, kernel_size, stride),
+                nn.Sigmoid()
             )
         else:
             return nn.Sequential(
@@ -122,6 +124,9 @@ class Classifier(nn.Module):
         class_pred = self.classifier(image)
         return class_pred.view(len(class_pred), -1)
 
+    def summary(self):
+        return summary(self, (3, 64, 64))
+
 
 def train_classifier(filename):
     import seaborn as sns
@@ -135,7 +140,7 @@ def train_classifier(filename):
     label_indices = range(40)
 
     n_epochs = 3
-    display_step = 500
+    display_step = 10
     lr = 0.001
     beta_1 = 0.5
     beta_2 = 0.999
@@ -152,15 +157,16 @@ def train_classifier(filename):
     dataloader = get_dataloader_celebA(batch_size, transform)
 
     classifier = Classifier(n_classes=len(label_indices)).to(device)
+    print(classifier.summary())
     class_opt = torch.optim.Adam(classifier.parameters(), lr=lr, betas=(beta_1, beta_2))
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.BCELoss()
 
     cur_step = 0
     classifier_losses = []
     # classifier_val_losses = []
     for epoch in range(n_epochs):
         # Dataloader returns the batches
-        for real, labels in tqdm(dataloader):
+        for real, labels in tqdm(dataloader, desc=f"Epoch {epoch}/{n_epochs - 1}"):
             real = real.to(device)
             labels = labels[:, label_indices].to(device).float()
 
@@ -175,16 +181,18 @@ def train_classifier(filename):
             if cur_step % display_step == 0 and cur_step > 0:
                 class_mean = sum(classifier_losses[-display_step:]) / display_step
                 print(f"Step {cur_step}: Classifier loss: {class_mean}")
-                step_bins = 20
-                x_axis = sorted([i * step_bins for i in range(len(classifier_losses) // step_bins)] * step_bins)
-                sns.lineplot(x_axis, classifier_losses[:len(x_axis)], label="Classifier Loss")
-                plt.legend()
-                plt.show()
+                # step_bins = 20
+                # x_axis = sorted([i * step_bins for i in range(len(classifier_losses) // step_bins)] * step_bins)
+                # sns.lineplot(x_axis, classifier_losses[:len(x_axis)], label="Classifier Loss")
+                # plt.legend()
+                # plt.show()
                 torch.save({"classifier": classifier.state_dict()}, filename)
             cur_step += 1
 
 
 if __name__ == '__main__':
-    # TODO google drive limitation
-    path = Path().cwd().parent
-    train_classifier(path/'classifier.pt')
+    clf = Classifier(n_classes=40).to(device)
+    clf.summary()
+    # # TODO google drive limitation
+    # path = Path().cwd().parent
+    # train_classifier(path / 'classifier.pt')
