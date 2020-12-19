@@ -3,8 +3,14 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-# project_root = Path.cwd()
-project_root = Path('/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN')
+current_username = getpass.getuser()
+if current_username == 'wyh':
+    # project_root = Path.cwd()
+    project_root = Path('/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN')
+elif current_username == 'wangyueh':
+    project_root = '/home/wangyueh/projects/GAN'
+else:
+    raise Exception('no valid data path')
 
 
 def _get_result_path():
@@ -18,7 +24,6 @@ def _get_result_path():
 result_root_path = _get_result_path()
 visualization_path = result_root_path / 'visualization'
 
-current_username = getpass.getuser()
 if current_username == 'wyh':
     data_path = project_root / 'data'
 elif current_username == 'wangyueh':
