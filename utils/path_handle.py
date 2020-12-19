@@ -8,7 +8,7 @@ if current_username == 'wyh':
     # project_root = Path.cwd()
     project_root = Path('/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN')
 elif current_username == 'wangyueh':
-    project_root = '/home/wangyueh/projects/GAN'
+    project_root = Path('/home/wangyueh/projects/GAN')
 else:
     raise Exception('no valid data path')
 
