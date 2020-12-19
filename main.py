@@ -15,7 +15,7 @@ if m_args.model == 'gan':
     gan.run_experiment(m_args.epoch)
 
 elif m_args.model == 'dcgan':
-    dcgan.run_experiment(m_args.epoch)
+    deep_convolutional_gan.run_experiment(m_args.epoch)
 
 
 

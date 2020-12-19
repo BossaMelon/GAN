@@ -1,8 +1,10 @@
+import getpass
 import os
 from datetime import datetime
 from pathlib import Path
 
-project_root = Path.cwd()
+# project_root = Path.cwd()
+project_root = Path('/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN')
 
 
 def _get_result_path():
@@ -15,7 +17,14 @@ def _get_result_path():
 
 result_root_path = _get_result_path()
 visualization_path = result_root_path / 'visualization'
-data_path = project_root / 'data'
+
+current_username = getpass.getuser()
+if current_username == 'wyh':
+    data_path = project_root / 'data'
+elif current_username == 'wangyueh':
+    data_path = '/phys/ssd/wangyueh/GAN'
+else:
+    raise Exception('no valid data path')
 
 
 def create_folder():

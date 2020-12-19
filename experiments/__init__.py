@@ -1,1 +1,1 @@
-__all__ = ["dcgan", "gan", "wgangp", "cgan"]
+__all__ = ["deep_convolutional_gan", "gan", "wgan_gradient_penalty", "conditional_gan"]

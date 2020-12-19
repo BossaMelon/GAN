@@ -6,6 +6,8 @@ from torchvision.utils import make_grid
 from utils.path_handle import result_root_path, visualization_path, create_folder
 
 
+# TODO merge flatten
+# TODO separate save and show
 def save_tensor_images_gan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
@@ -15,7 +17,7 @@ def save_tensor_images_gan(image_tensor, file_name, num_images=25, size=(1, 28, 
     _show_save(file_name, image_unflat, num_images, show)
 
 
-def save_tensor_images_dcgan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False):
+def save_tensor_images_dcgan(image_tensor, file_name, num_images=25, show=False):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
     size per image, plots and prints the images in a uniform grid.
@@ -26,7 +28,7 @@ def save_tensor_images_dcgan(image_tensor, file_name, num_images=25, size=(1, 28
     _show_save(file_name, image_unflat, num_images, show)
 
 
-def save_tensor_images_cgan(image_tensor, file_name, num_images=25, size=(1, 28, 28), show=False, nrow=10):
+def save_tensor_images_cgan(image_tensor, file_name, num_images=25, show=False, nrow=10):
     """
     Function for visualizing images: Given a tensor of images, number of images, and
     size per image, plots and prints the images in a uniform grid.
@@ -43,7 +45,7 @@ def _show_save(file_name, image_unflat, num_images, show, nrow=5):
     if show:
         plt.imshow(image_grid)
         plt.show()
-
+        return
     file_path = visualization_path / '{}.jpg'.format(file_name)
     plt.imsave(file_path, image_grid)
 
@@ -129,6 +131,18 @@ def combine_vectors(x, y):
     # Note: Make sure this function outputs a float no matter what inputs it receives
     combined = torch.cat((x.float(), y.float()), dim=1)
     return combined
+
+
+def show_tensor_images(image_tensor, num_images=16, nrow=3):
+    """
+    Function for visualizing images: Given a tensor of images, number of images, and
+    size per image, plots and prints the images in an uniform grid.
+    """
+    image_tensor = (image_tensor + 1) / 2
+    image_unflat = image_tensor.detach().cpu()
+    image_grid = make_grid(image_unflat[:num_images], nrow=nrow)
+    plt.imshow(image_grid.permute(1, 2, 0).squeeze())
+    plt.show()
 
 
 if __name__ == '__main__':

@@ -2,12 +2,9 @@ import sys
 
 import torch
 import torch.nn as nn
-from torchvision import transforms
-from tqdm.auto import tqdm
+from torchsummary import summary
 
 sys.path.append('./..')
-from torchsummary import summary
-from dataloader import get_dataloader_celebA
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
@@ -70,6 +67,9 @@ class Generator(nn.Module):
         x = noise.view(len(noise), self.z_dim, 1, 1)
         return self.gen(x)
 
+    def summary(self):
+        return summary(self, (self.z_dim,))
+
 
 class Classifier(nn.Module):
     """
@@ -129,76 +129,11 @@ class Classifier(nn.Module):
         return summary(self, (3, 64, 64))
 
 
-def train_classifier(filename):
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
-    # You can run this code to train your own classifier, but there is a provided pretrained one.
-    # If you'd like to use this, just run "train_classifier(filename)"
-    # to train and save a classifier on the label indices to that filename.
-
-    # Target all the classes, so that's how many the classifier will learn
-    label_indices = range(40)
-
-    n_epochs = 3
-    display_step = 10
-    lr = 0.001
-    beta_1 = 0.5
-    beta_2 = 0.999
-    image_size = 64
-    batch_size = 128
-
-    transform = transforms.Compose([
-        transforms.Resize(image_size),
-        transforms.CenterCrop(image_size),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-    ])
-
-    dataloader = get_dataloader_celebA(batch_size, transform)
-
-    classifier = Classifier(n_classes=len(label_indices)).to(device)
-    class_opt = torch.optim.Adam(classifier.parameters(), lr=lr, betas=(beta_1, beta_2))
-    criterion = nn.BCELoss()
-
-    cur_step = 0
-    classifier_losses = []
-    # classifier_val_losses = []
-    print()
-    print(f'Start training on {device_name}')
-    print(64 * '-')
-
-
-
-    for epoch in range(n_epochs):
-        # Dataloader returns the batches
-        for real, labels in tqdm(dataloader, desc=f"Epoch {epoch}/{n_epochs - 1}"):
-            real = real.to(device)
-            labels = labels[:, label_indices].to(device).float()
-
-            class_opt.zero_grad()
-            class_pred = classifier(real)
-            class_loss = criterion(class_pred, labels)
-            class_loss.backward()  # Calculate the gradients
-            class_opt.step()  # Update the weights
-            classifier_losses += [class_loss.item()]  # Keep track of the average classifier loss
-
-            # Visualization code
-            if cur_step % display_step == 0 and cur_step > 0:
-                class_mean = sum(classifier_losses[-display_step:]) / display_step
-                print(f"Step {cur_step}: Classifier loss: {class_mean}")
-                # step_bins = 20
-                # x_axis = sorted([i * step_bins for i in range(len(classifier_losses) // step_bins)] * step_bins)
-                # sns.lineplot(x_axis, classifier_losses[:len(x_axis)], label="Classifier Loss")
-                # plt.legend()
-                # plt.show()
-                torch.save({"classifier": classifier.state_dict()}, filename)
-            cur_step += 1
-
-
 if __name__ == '__main__':
     clf = Classifier(n_classes=40).to(device)
     clf.summary()
+    gen = Generator(z_dim=64)
+    gen.summary()
     # # TODO google drive limitation
     # path = Path().cwd().parent
-    # train_classifier(path / 'classifier.pt')
+    # train_classifier(path / 'trained_models'/ 'classifier.pt')
