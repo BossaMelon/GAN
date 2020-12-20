@@ -1,6 +1,7 @@
 /data/
 /trained_models/
 /results/
-/model_checkpoints/
+
+/resources/
 *.pt
 *.pth
