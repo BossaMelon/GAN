@@ -134,6 +134,5 @@ if __name__ == '__main__':
     clf.summary()
     gen = Generator(z_dim=64)
     gen.summary()
-    # # TODO google drive limitation
     # path = Path().cwd().parent
     # train_classifier(path / 'trained_models'/ 'classifier.pt')

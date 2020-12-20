@@ -1,5 +1,6 @@
 import torch
 
+
 def get_gen_loss(crit_fake_pred):
     """
     Return the loss of a generator given the critic's scores of the generator's fake images.

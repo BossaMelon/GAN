@@ -6,4 +6,4 @@ from experiments.controllable_gan import train_classifier
 # wgangp.run_experiment(100)
 # cgan.run_experiment(200)
 
-train_classifier('classifier.pt')
+# train_classifier('classifier.pt')

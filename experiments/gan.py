@@ -27,4 +27,8 @@ def run_experiment(n_epochs):
     plot_result_after_training()
 
 
+if __name__ == '__main__':
+    run_experiment(2)
+
+
 

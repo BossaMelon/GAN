@@ -9,6 +9,7 @@ from tqdm.auto import tqdm
 from dataloader import get_dataloader_celebA
 from models.model_controllable_gan import Generator, Classifier, device, device_name
 from utils.util import get_noise, save_tensor_images_dcgan, show_tensor_images
+from utils.path_handle import model_path
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
@@ -21,35 +22,26 @@ feature_names = ["5oClockShadow", "ArchedEyebrows", "Attractive", "BagsUnderEyes
                  "RecedingHairline", "RosyCheeks", "Sideburn", "Smiling", "StraightHair", "WavyHair",
                  "WearingEarrings",
                  "WearingHat", "WearingLipstick", "WearingNecklace", "WearingNecktie", "Young"]
-n_images = 8
+n_images = 25
 fake_image_history = []
 grad_steps = 20  # Number of gradient steps to take
 skip = 2  # Number of gradient steps to skip in the visualization
 
 
-# TODO check how to train_generator? Simply train with DCGAN?
+# TODO check how to train_generator? Simply train with DCGAN? Waiting for cousera reply
 def train_generator():
     pass
 
 
-# TODO merge to path handle
 def load_pretrained_models():
-    current_username = getpass.getuser()
-    if current_username == 'wyh':
-        model_root = '/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN/trained_models'
-    elif current_username == 'wangyueh':
-        model_root = ''
-    else:
-        raise Exception('not defined path')
-
     gen = Generator(z_dim).to(device)
-    gen_dict = torch.load(model_root + "/pretrained_celeba.pth", map_location=torch.device(device))["gen"]
+    gen_dict = torch.load(model_path + "/pretrained_celeba.pth", map_location=torch.device(device))["gen"]
     gen.load_state_dict(gen_dict)
     gen.eval()
 
     n_classes = 40
     classifier = Classifier(n_classes=n_classes).to(device)
-    class_dict = torch.load(model_root + "/pretrained_classifier.pth", map_location=torch.device(device))["classifier"]
+    class_dict = torch.load(model_path + "/pretrained_classifier.pth", map_location=torch.device(device))["classifier"]
     classifier.load_state_dict(class_dict)
     classifier.eval()
     print("Loaded the models!")
@@ -127,12 +119,10 @@ def train_classifier(filename):
 
 
 def test_generator():
-    n_images = 25
     gen, _, _ = load_pretrained_models()
     noise = get_noise(n_images, z_dim).to(device)
     fake = gen(noise)
     save_tensor_images_dcgan(fake, '', show=True)
-    print()
 
 
 def _calculate_updated_noise(noise, weight):
@@ -222,4 +212,5 @@ def run_conditional_gen_with_regularization():
 
 
 if __name__ == '__main__':
-    run_conditional_gen_with_regularization()
+    train_classifier('classifier.pt')
+    # run_conditional_gen_with_regularization()

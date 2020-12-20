@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 from torchvision.utils import make_grid
 
-from utils.path_handle import result_root_path, visualization_path, create_folder
+from utils.path_handle import result_root_path, visualization_path
 
 
 # TODO merge flatten
@@ -74,9 +74,6 @@ def write_traininfo_to_file(info):
         file.write(info)
 
 
-create_folder()
-
-
 def read_loss_from_txt(txt_path):
     with open(txt_path, "r") as f:
         str_list = f.read().splitlines()
@@ -84,27 +81,21 @@ def read_loss_from_txt(txt_path):
     return loss_list
 
 
-def visulize_loss(discriminator_loss_path, generator_loss_path):
+def visualize_loss(discriminator_loss_path, generator_loss_path, plot_path):
     discriminator_loss = read_loss_from_txt(discriminator_loss_path)
     generator_loss = read_loss_from_txt(generator_loss_path)
     plt.plot(discriminator_loss, label='Discriminator Loss')
     plt.plot(generator_loss, label='generator Loss')
     plt.legend()
-    plt.savefig()
+    plt.savefig(plot_path)
 
 
 def plot_result_after_training():
     discriminator_loss_path = result_root_path / 'discriminator_loss.txt'
     generator_loss_path = result_root_path / 'generator_loss.txt'
+    plot_path = result_root_path / 'loss_plot.png'
 
-    discriminator_loss = read_loss_from_txt(discriminator_loss_path)
-    generator_loss = read_loss_from_txt(generator_loss_path)
-
-    plt.plot(discriminator_loss, label='Discriminator Loss')
-    plt.plot(generator_loss, label='generator Loss')
-
-    plt.legend()
-    plt.savefig(result_root_path / 'loss_plot.png')
+    visualize_loss(discriminator_loss_path, generator_loss_path, plot_path)
 
 
 def get_one_hot_labels(labels, n_classes):
@@ -148,5 +139,3 @@ def show_tensor_images(image_tensor, num_images=16, nrow=3):
 if __name__ == '__main__':
     path = '/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN/results/discriminator_loss.txt'
     path2 = '/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN/results/generator_loss.txt'
-
-    visulize_loss(path, path2)
