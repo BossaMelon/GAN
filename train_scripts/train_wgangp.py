@@ -2,10 +2,7 @@ import torch
 from tqdm.auto import tqdm
 
 from losses.wgangp_losses import get_crit_loss, get_gen_loss, get_gradient, gradient_penalty
-from utils.util import write_loss_to_file, get_noise, save_tensor_images_dcgan
-
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
+from utils.util import write_loss_to_file, get_noise, save_tensor_images_dcgan, device, device_name
 
 
 def train_wgangp(gen, crit, dataloader, epochs, gen_opt, crit_opt, z_dim, c_lambda):

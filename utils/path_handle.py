@@ -9,13 +9,16 @@ if current_username == 'wyh':
     # project_root = Path.cwd()
     resource_root = Path('/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN/resources')
     data_path = resource_root / 'data'
-    model_path = resource_root / 'trained_models'
+    pretrained_model_path = resource_root / 'pretrained_models'
+    model_checkpoint_path = resource_root / 'model_checkpoints'
 
 
 elif current_username == 'wangyueh':
     resource_root = Path('/home/wangyueh/projects/GAN/resources')
     data_path = '/phys/ssd/wangyueh/GAN/data'
-    model_path = '/phys/ssd/wangyueh/GAN/trained_models'
+    pretrained_model_path = '/phys/ssd/wangyueh/GAN/pretrained_models'
+    model_checkpoint_path = resource_root / 'model_checkpoints'
+
 
 else:
     raise Exception('no valid data path')
@@ -33,7 +36,7 @@ visualization_path = result_root_path / 'visualization'
 
 
 def create_folder():
-    folders = [visualization_path, data_path, model_path]
+    folders = [visualization_path, data_path, pretrained_model_path, model_checkpoint_path]
     for folder in folders:
         if not os.path.exists(folder):
             os.makedirs(folder)

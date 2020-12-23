@@ -5,6 +5,9 @@ from torchvision.utils import make_grid
 
 from utils.path_handle import result_root_path, visualization_path
 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
+
 
 # TODO merge flatten
 # TODO separate save and show

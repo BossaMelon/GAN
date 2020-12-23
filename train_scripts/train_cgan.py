@@ -1,10 +1,8 @@
 import torch
 from tqdm.auto import tqdm
 
-from utils.util import write_loss_to_file, get_noise, save_tensor_images_cgan, get_one_hot_labels, combine_vectors
-
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
+from utils.util import write_loss_to_file, get_noise, save_tensor_images_cgan, get_one_hot_labels, combine_vectors, \
+    device, device_name
 
 
 def train_cgan(gen, disc, dataloader, epochs, gen_opt, disc_opt, criterion, z_dim, n_classes, mnist_shape):

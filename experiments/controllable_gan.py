@@ -1,5 +1,3 @@
-import getpass
-
 import matplotlib.pyplot as plt
 import torch
 from torch import nn as nn
@@ -7,12 +5,10 @@ from torchvision import transforms
 from tqdm.auto import tqdm
 
 from dataloader import get_dataloader_celebA
-from models.model_controllable_gan import Generator, Classifier, device, device_name
-from utils.util import get_noise, save_tensor_images_dcgan, show_tensor_images
-from utils.path_handle import model_path
+from models.model_controllable_gan import Generator, Classifier
+from utils.path_handle import pretrained_model_path, model_checkpoint_path
+from utils.util import get_noise, save_tensor_images_dcgan, show_tensor_images, device, device_name
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-device_name = 'cpu' if not torch.cuda.is_available() else torch.cuda.get_device_name()
 z_dim = 64
 
 feature_names = ["5oClockShadow", "ArchedEyebrows", "Attractive", "BagsUnderEyes", "Bald", "Bangs",
@@ -23,7 +19,6 @@ feature_names = ["5oClockShadow", "ArchedEyebrows", "Attractive", "BagsUnderEyes
                  "WearingEarrings",
                  "WearingHat", "WearingLipstick", "WearingNecklace", "WearingNecktie", "Young"]
 n_images = 25
-fake_image_history = []
 grad_steps = 20  # Number of gradient steps to take
 skip = 2  # Number of gradient steps to skip in the visualization
 
@@ -35,13 +30,14 @@ def train_generator():
 
 def load_pretrained_models():
     gen = Generator(z_dim).to(device)
-    gen_dict = torch.load(model_path + "/pretrained_celeba.pth", map_location=torch.device(device))["gen"]
+    gen_dict = torch.load(pretrained_model_path / "pretrained_celeba.pth", map_location=torch.device(device))["gen"]
     gen.load_state_dict(gen_dict)
     gen.eval()
 
     n_classes = 40
     classifier = Classifier(n_classes=n_classes).to(device)
-    class_dict = torch.load(model_path + "/pretrained_classifier.pth", map_location=torch.device(device))["classifier"]
+    class_dict = torch.load(pretrained_model_path / "pretrained_classifier.pth", map_location=torch.device(device))[
+        "classifier"]
     classifier.load_state_dict(class_dict)
     classifier.eval()
     print("Loaded the models!")
@@ -50,7 +46,7 @@ def load_pretrained_models():
     return gen, classifier, opt
 
 
-def train_classifier(filename):
+def train_classifier():
     """
     indices stands for whether in the pic there is:
       5_o_Clock_Shadow Arched_Eyebrows Attractive Bags_Under_Eyes Bald Bangs Big_Lips Big_Nose Black_Hair Blond_Hair
@@ -114,7 +110,7 @@ def train_classifier(filename):
                 # sns.lineplot(x_axis, classifier_losses[:len(x_axis)], label="Classifier Loss")
                 # plt.legend()
                 # plt.show()
-                torch.save({"classifier": classifier.state_dict()}, filename)
+                torch.save({"classifier": classifier.state_dict()}, str(model_checkpoint_path / 'classifier.pt'))
             cur_step += 1
 
 
@@ -139,6 +135,7 @@ def _calculate_updated_noise(noise, weight):
 
 def run_conditional_gen():
     gen, classifier, opt = load_pretrained_models()
+    fake_image_history = []
 
     ### Change me! ###
     target_indices = feature_names.index("Male")  # Feel free to change this value to any string from feature_names!
@@ -212,5 +209,4 @@ def run_conditional_gen_with_regularization():
 
 
 if __name__ == '__main__':
-    train_classifier('classifier.pt')
-    # run_conditional_gen_with_regularization()
+    load_pretrained_models()
