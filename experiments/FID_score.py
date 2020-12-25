@@ -1,5 +1,3 @@
-import sys
-
 import numpy as np
 import scipy.linalg
 import torch
@@ -8,18 +6,15 @@ from torchvision import transforms
 from torchvision.datasets import CelebA
 from torchvision.models import inception_v3
 from tqdm.auto import tqdm
-
-sys.path.append('..')
 from dataloader import get_dataloader_celebA
 from models.model_controllable_gan import Generator
 from utils.path_handle import pretrained_model_path
 from utils.util import device, get_noise
 
 z_dim = 64
-batch_size = 4  # Samples per iteration
+batch_size = 4
 
 
-# TODO not finish!
 def get_model(inception_print=False, gen_print=False):
     inception_model = inception_v3(pretrained=False, init_weights=False)
     if inception_print:
@@ -117,21 +112,18 @@ def extract_feature_real_fake():
 
     cur_samples = 0
     with torch.no_grad():  # You don't need to calculate gradients here, so you do this to save memory
-        try:
-            for real_example, _ in tqdm(dataloader, total=n_samples // batch_size):  # Go by batch
-                real_samples = real_example
-                real_features = inception_model(real_samples.to(device)).detach().to('cpu')  # Move features to CPU
-                real_features_list.append(real_features)
+        for real_example, _ in tqdm(dataloader, total=n_samples // batch_size):  # Go by batch
+            real_samples = real_example
+            real_features = inception_model(real_samples.to(device)).detach().to('cpu')  # Move features to CPU
+            real_features_list.append(real_features)
 
-                fake_samples = get_noise(len(real_example), z_dim).to(device)
-                fake_samples = preprocess(gen(fake_samples))
-                fake_features = inception_model(fake_samples.to(device)).detach().to('cpu')
-                fake_features_list.append(fake_features)
-                cur_samples += len(real_samples)
-                if cur_samples >= n_samples:
-                    break
-        except:
-            print("Error in loop")
+            fake_samples = get_noise(len(real_example), z_dim).to(device)
+            fake_samples = preprocess(gen(fake_samples))
+            fake_features = inception_model(fake_samples.to(device)).detach().to('cpu')
+            fake_features_list.append(fake_features)
+            cur_samples += len(real_samples)
+            if cur_samples >= n_samples:
+                break
 
     return fake_features_list, real_features_list
 
@@ -153,6 +145,8 @@ def run():
 
 
 if __name__ == '__main__':
+    import sys
+    sys.path.append('..')
     # dummy_imagebatch = torch.randn((5, 3, 299, 299))
     run()
 
