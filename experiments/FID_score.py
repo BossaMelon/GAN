@@ -1,11 +1,13 @@
 import numpy as np
-import scipy.linalg
+import scipy
 import torch
+import sys
 from torchsummary import summary
 from torchvision import transforms
 from torchvision.datasets import CelebA
 from torchvision.models import inception_v3
 from tqdm.auto import tqdm
+sys.path.append('..')
 from dataloader import get_dataloader_celebA
 from models.model_controllable_gan import Generator
 from utils.path_handle import pretrained_model_path
@@ -145,8 +147,6 @@ def run():
 
 
 if __name__ == '__main__':
-    import sys
-    sys.path.append('..')
     # dummy_imagebatch = torch.randn((5, 3, 299, 299))
     run()
 
