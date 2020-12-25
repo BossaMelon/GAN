@@ -15,8 +15,9 @@ if current_username == 'wyh':
 
 elif current_username == 'wangyueh':
     resource_root = Path('/home/wangyueh/projects/GAN/resources')
-    data_path = '/phys/ssd/wangyueh/GAN/data'
-    pretrained_model_path = '/phys/ssd/wangyueh/GAN/pretrained_models'
+    ssd_root = Path('/phys/ssd/wangyueh')
+    data_path = ssd_root / 'GAN/data'
+    pretrained_model_path = ssd_root / 'GAN/pretrained_models'
     model_checkpoint_path = resource_root / 'model_checkpoints'
 
 
