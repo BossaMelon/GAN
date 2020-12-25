@@ -6,8 +6,8 @@ from pathlib import Path
 current_username = getpass.getuser()
 
 if current_username == 'wyh':
-    # project_root = Path.cwd()
-    resource_root = Path('/Users/wyh/Documents/Project/cousera/pytorch_implementation/GAN/resources')
+    project_root = Path(__file__).parent.parent.resolve()
+    resource_root = project_root / 'resources'
     data_path = resource_root / 'data'
     pretrained_model_path = resource_root / 'pretrained_models'
     model_checkpoint_path = resource_root / 'model_checkpoints'
@@ -46,4 +46,4 @@ def create_folder():
 create_folder()
 
 if __name__ == '__main__':
-    print(resource_root)
+    print(Path(__file__).parent.parent.resolve())
