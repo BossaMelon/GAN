@@ -144,7 +144,7 @@ def caculate_fid(fake_features_list, real_features_list):
     sigma_fake = get_covariance(fake_features_all)
     sigma_real = get_covariance(real_features_all)
     with torch.no_grad():
-        print(frechet_distance(mu_real, mu_fake, sigma_real, sigma_fake).item())
+        print(f'fid is {frechet_distance(mu_real, mu_fake, sigma_real, sigma_fake).item():.3f}')
 
 
 def run():
@@ -155,3 +155,4 @@ def run():
 if __name__ == '__main__':
     # dummy_imagebatch = torch.randn((5, 3, 299, 299))
     run()
+
