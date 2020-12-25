@@ -1,7 +1,7 @@
 import sys
 
 import numpy as np
-import scipy
+import scipy.linalg
 import torch
 from torchsummary import summary
 from torchvision import transforms
@@ -67,7 +67,7 @@ def get_dataloader():
     return dataloader
 
 
-def _matrix_sqrt(x):
+def matrix_sqrt(x):
     """
     Function that takes in a matrix and returns the square root of that matrix.
     For an input matrix A, the output matrix B would be such that B @ B is the matrix A.
@@ -98,7 +98,7 @@ def frechet_distance(mu_x, mu_y, sigma_x, sigma_y):
         sigma_x: the covariance matrix of the first Gaussian, (n_features, n_features)
         sigma_y: the covariance matrix of the second Gaussian, (n_features, n_features)
     """
-    res = torch.norm(mu_x - mu_y) ** 2 + torch.trace(sigma_x + sigma_y - 2 * _matrix_sqrt(sigma_x @ sigma_y))
+    res = torch.norm(mu_x - mu_y) ** 2 + torch.trace(sigma_x + sigma_y - 2 * matrix_sqrt(sigma_x @ sigma_y))
     return res
 
 
