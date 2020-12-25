@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 import scipy
 import torch
@@ -7,6 +9,7 @@ from torchvision.datasets import CelebA
 from torchvision.models import inception_v3
 from tqdm.auto import tqdm
 
+sys.path.append('..')
 from dataloader import get_dataloader_celebA
 from models.model_controllable_gan import Generator
 from utils.path_handle import pretrained_model_path
